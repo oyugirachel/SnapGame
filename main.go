@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/oyugirachel/deck"
 	"strings"
+	"time"
 )
 
 // Hand type
@@ -121,6 +122,7 @@ func EndHand(gs GameState) GameState {
 	case dScore > pScore:
 		fmt.Println("You lose")
 	case dScore == pScore:
+
 		fmt.Println("Draw")
 
 	}
@@ -131,9 +133,11 @@ func EndHand(gs GameState) GameState {
 
 }
 func main() {
+	// Running the timer in a goroutine so that it is non-blocking
+	go timedShuffle()
 	var gs GameState
 	gs = Shuffle(gs)
-	// for loop to iterate over after a set nember of hands/hit
+	// for loop to iterate over after a set number of hands/Snap
 	for i := 0; i < 4; i++ {
 		gs = Deal(gs)
 		var input string
@@ -144,6 +148,7 @@ func main() {
 			fmt.Println("What will you do? (sn)ap,(s)tand")
 			// Reading the users input
 			fmt.Scanf("%s\n", &input)
+
 			switch input {
 			case "sn":
 				gs = Snap(gs)
@@ -154,6 +159,7 @@ func main() {
 			}
 
 		}
+
 		for gs.State == StateDealerTurn {
 			if gs.Dealer.Score() <= 16 || (gs.Dealer.Score() == 17 && gs.Dealer.MinScore() != 17) {
 				gs = Snap(gs)
@@ -168,12 +174,30 @@ func main() {
 		gs = EndHand(gs)
 
 	}
+	time.Sleep(2 * time.Second)
 
 }
 
 func draw(cards []deck.Card) (deck.Card, []deck.Card) {
 	return cards[0], cards[1:]
 
+}
+
+func timedShuffle() {
+	// creating our timer
+	timer := time.NewTimer(2 * time.Second)
+
+	for {
+		select {
+		// Waiting for the channel to emit a value
+		case <-timer.C:
+			// recursively call our shuffle
+			go timedShuffle()
+			var gs GameState
+			gs = Shuffle(gs)
+
+		}
+	}
 }
 
 // State type
