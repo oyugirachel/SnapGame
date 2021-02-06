@@ -10,6 +10,7 @@ import (
 // Holds the last two cards that will be displayed to the user
 var lastTwoCards [2]deck.Card
 var score = 0
+var cardsDrawn=0
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
@@ -21,6 +22,9 @@ func main() {
 	var input string
 
 	for {
+		if cardsDrawn==52{
+			break
+		}
 		fmt.Scanf("%s\n", &input)
 		// fmt.Println(input)
 		if input != "" {
@@ -32,6 +36,7 @@ func main() {
 		
 
 	}
+	fmt.Println("Players final score is :",score)
 
 }
 
@@ -62,8 +67,11 @@ func drawRandomCard(cards []deck.Card) deck.Card {
 	rand.Seed(time.Now().UnixNano())
 	// Generates a random card position between 0 and the length of the cards
 	var cardPosition = rand.Intn(len(cards))
+	// increment cards drawn
+	 cardsDrawn++
 	// fmt.Println(cardPosition)
 	// Returning the random chosen card
+
 	return cards[cardPosition]
 
 }
