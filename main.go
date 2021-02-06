@@ -24,25 +24,35 @@ func main() {
 		fmt.Scanf("%s\n", &input)
 		// fmt.Println(input)
 		if input != "" {
-
-			if lastTwoCards[0] == lastTwoCards[1] {
-				// increment the score for the user has snapped
-				score++
-			} else {
-				// If the user snaps and the cards are not the same
-				score--
-			}
+			checkLastTwoCards(true)
 
 		}
+		
+		input = ""
+		
+
+	}
+
+}
+
+func checkLastTwoCards(snap bool) {
+	if snap {
+		if lastTwoCards[0] == lastTwoCards[1] {
+			// increment the score for the user has snapped
+			score++
+		} else {
+			// If the user snaps and the cards are not the same
+			score--
+		}
+	}else{
 		// Check if the last two cards are the same
 		if lastTwoCards[0] == lastTwoCards[1] {
 			// We are sure the user hasnt snapped so we deduct the score
 			score--
 		}
-		input = ""
-		fmt.Println("Your score is:", score)
-
+		
 	}
+	fmt.Println("Your score is:", score)
 
 }
 
@@ -73,7 +83,9 @@ func timedShuffle(cards []deck.Card) {
 			lastTwoCards[0] = lastTwoCards[1]
 			// taken the random card to be the most recent one
 			lastTwoCards[1] = card
+			checkLastTwoCards(false)
 			fmt.Println(lastTwoCards)
+			
 
 		}
 	}
