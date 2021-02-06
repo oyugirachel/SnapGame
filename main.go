@@ -15,6 +15,20 @@ func main() {
 	// fmt.Println(cards)
 	// fmt.Println(len(cards))
 	fmt.Println(drawRandomCard(cards))
+	var input string
+
+	for {
+		fmt.Scanf("%s\n", &input)
+		// fmt.Println(input)
+		if input != ""{
+			fmt.Println("The user has said snapped")
+		}
+		input = ""
+ 
+
+	}
+
+	
 
 }
 
@@ -43,4 +57,7 @@ func timedShuffle() {
 		}
 	}
 }
-
+// scanInput function scans the input
+func scanInput(){
+	
+}
