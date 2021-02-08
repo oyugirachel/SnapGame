@@ -75,21 +75,21 @@ func drawRandomCard(cards []deck.Card) deck.Card {
 	return cards[cardPosition]
 
 }
+
 // randInt function to randomize time between max and min
 func randInt(min int, max int) int {
-    return min + rand.Intn(max-min)
+	return min + rand.Intn(max-min)
 }
 
 // timedShuffle function
 func timedShuffle(cards []deck.Card) {
 	rand.Seed(time.Now().UTC().UnixNano())
-	t := randInt(1, 4)
+	t := randInt(1, 5)
 	x := time.Duration(t)
-	
 
 	// creating our timer and randomizing it
 
-	timer := time.NewTimer(x *time.Second)
+	timer := time.NewTimer(x * time.Second)
 
 	for {
 		select {
