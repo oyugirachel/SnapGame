@@ -16,6 +16,14 @@ var cardsDrawn = 0
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
+
+	// Game instructions
+	fmt.Println(" *** Welcome to the SNAP game *** ")
+	fmt.Println(" *** Hit any key and enter to say SNAP ***")
+
+	// Creating a random variable to draw one card
+
+	rand.Seed(time.Now().UTC().UnixNano())
 	// calling in a goroutine to prevent blocking
 	go timedShuffle(cards)
 	// fmt.Println(cards)
@@ -30,6 +38,7 @@ func main() {
 		fmt.Scanf("%s\n", &input)
 		// fmt.Println(input)
 		if input != "" {
+			fmt.Println("SNAP")
 			checkLastTwoCards(true)
 
 		}
@@ -52,20 +61,19 @@ func checkLastTwoCards(snap bool) {
 		}
 	} else {
 		// Check if the last two cards are the same
-		if lastTwoCards[0] != lastTwoCards[1] {
+		if lastTwoCards[0] == lastTwoCards[1] {
 			// We are sure the user hasnt snapped so we deduct the score
 			score--
 		}
 
 	}
-	fmt.Println("Your score is:", score)
+	fmt.Println("\nYour score is:", score)
 
 }
 
 // DrawRandomCard function
 func drawRandomCard(cards []deck.Card) deck.Card {
-	// Creating a random variable to draw one card
-	rand.Seed(time.Now().UnixNano())
+
 	// Generates a random card position between 0 and the length of the cards
 	var cardPosition = rand.Intn(len(cards))
 	// increment cards drawn
@@ -84,7 +92,7 @@ func randInt(min int, max int) int {
 
 // timedShuffle function
 func timedShuffle(cards []deck.Card) {
-	rand.Seed(time.Now().UTC().UnixNano())
+
 	t := randInt(1, 5)
 	x := time.Duration(t)
 
