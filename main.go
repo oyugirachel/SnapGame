@@ -109,7 +109,7 @@ func timedShuffle(cards []deck.Card) {
 		case <-timer.C:
 			// recursively call our shuffle
 
-			go timedShuffle(cards)
+			// go timedShuffle(cards)
 
 			card := drawRandomCard(cards)
 			// shift position to position one
