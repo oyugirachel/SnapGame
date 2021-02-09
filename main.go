@@ -26,6 +26,7 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	// calling in a goroutine to prevent blocking
 	go timedShuffle(cards)
+
 	// fmt.Println(cards)
 	// fmt.Println(len(cards))
 	// fmt.Println(drawRandomCard(cards))
@@ -93,18 +94,21 @@ func randInt(min int, max int) int {
 // timedShuffle function
 func timedShuffle(cards []deck.Card) {
 
-	t := randInt(1, 5)
-	x := time.Duration(t)
+	// t := randInt(1, 5)
+	// x := time.Duration(t)
 
-	// creating our timer and randomizing it
+	// // creating our timer and randomizing it
 
-	timer := time.NewTimer(x * time.Second)
+	// timer := time.NewTimer(x * time.Second)
+
+	timer := time.NewTicker(time.Second * 2)
 
 	for {
 		select {
 		// Waiting for the channel to emit a value
 		case <-timer.C:
 			// recursively call our shuffle
+
 			go timedShuffle(cards)
 
 			card := drawRandomCard(cards)
