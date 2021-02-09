@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/oyugirachel/deck"
 
 	"math/rand"
@@ -104,7 +105,15 @@ func timedShuffle(cards []deck.Card) {
 			// taken the random card to be the most recent one
 			lastTwoCards[1] = card
 			checkLastTwoCards(false)
-			fmt.Println(lastTwoCards)
+			for index, j := range lastTwoCards {
+				if index == 0 { //If the value is first one
+					fmt.Printf("[ '%v', ", j)
+				} else if len(lastTwoCards) == index+1 { // If the value is the last one
+					fmt.Printf("'%v' ]", j)
+				} else {
+					fmt.Printf(" '%v', ", j) // for all ( middle ) values
+				}
+			}
 
 		}
 	}
