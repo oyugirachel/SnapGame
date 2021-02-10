@@ -4,11 +4,12 @@ import (
 	"fmt"
 
 	"github.com/oyugirachel/deck"
+	"github.com/common-nighthawk/go-figure"
 
 	"math/rand"
 	"time"
 
-	"github.com/common-nighthawk/go-figure"
+	
 )
 
 // Holds the last two cards that will be displayed to the user
@@ -19,7 +20,7 @@ var cardsDrawn = 0
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
 	// Game instructions
-	art := figure.NewColorFigure("SNAP GAME", "", "Red", true)
+	art :=figure.NewColorFigure("SNAP GAME", "", "Red", true)
 	art.Blink(3000, 500, -1)
 
 	art.Print()
@@ -92,7 +93,7 @@ func checkLastTwoCards(snap bool) {
 		// Check if the last two cards are the same
 		if lastTwoCards[0] == lastTwoCards[1] {
 			// We are sure the user hasnt snapped so we deduct the score
-			score--
+			score++
 		}
 
 	}
@@ -148,13 +149,18 @@ func timedShuffle(cards []deck.Card) {
 			checkLastTwoCards(false)
 
 			for index, j := range lastTwoCards {
+				
 				if index == 0 { //If the value is first one
+					fmt.Println("=====================================")
 					fmt.Printf("[ '%v', ", j)
+					
 				} else if len(lastTwoCards) == index+1 { // If the value is the last one
-					fmt.Printf("'%v' ]", j)
+					fmt.Printf("'%v' ] \n", j)
+					fmt.Println("======================================")
 				} else {
 					fmt.Printf(" '%v', ", j) // for all ( middle ) values
 				}
+				
 			}
 
 		}
