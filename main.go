@@ -26,7 +26,7 @@ func main() {
 
 	message :=
 		`
-Press any key to say SNAP when the value of the last two cards displayed on the screen matches
+Press any key and enter to say SNAP when the value of the last two cards displayed on the screen matches
 
                =====BONUS=====
   ** 1 point is gained if you SNAP correctly **
@@ -63,6 +63,7 @@ BE ON THE LOOKOUT !
 		if cardsDrawn == 52 {
 			break
 		}
+		
 		fmt.Scanf("%s\n", &input)
 		// fmt.Println(input)
 		if input != "" {
@@ -106,6 +107,7 @@ func drawRandomCard(cards []deck.Card) deck.Card {
 	var cardPosition = rand.Intn(len(cards))
 	// increment cards drawn
 	cardsDrawn++
+	
 	// fmt.Println(cardPosition)
 	// Returning the random chosen card
 
