@@ -20,7 +20,7 @@ func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
 	// Game instructions
 	art := figure.NewColorFigure("SNAP GAME", "", "Red", true)
-	art.Blink(1000, 500, -1)
+	art.Blink(3000, 500, -1)
 
 	art.Print()
 
@@ -37,11 +37,16 @@ Press any key to say SNAP when the value of the last two cards displayed on the 
 
 
 
-LETS GO !
+BE ON THE LOOKOUT !
 
 
 `
 	fmt.Println(message)
+	for k:=6; k>0; k--{
+		fmt.Printf("%d ..",k)
+		time.Sleep(time.Second)
+	}
+	fmt.Println("Gooooo!")
 
 	// Creating a random variable to draw one card
 
