@@ -7,6 +7,8 @@ import (
 
 	"math/rand"
 	"time"
+
+	"github.com/common-nighthawk/go-figure"
 )
 
 // Holds the last two cards that will be displayed to the user
@@ -16,10 +18,30 @@ var cardsDrawn = 0
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
-
 	// Game instructions
-	fmt.Println(" *** Welcome to the SNAP game *** ")
-	fmt.Println(" *** Hit any key and enter to say SNAP ***")
+	art := figure.NewColorFigure("SNAP GAME", "", "Red", true)
+	art.Blink(1000, 500, -1)
+
+	art.Print()
+
+	message :=
+		`
+Press any key to say SNAP when the value of the last two cards displayed on the screen matches
+
+               =====BONUS=====
+  ** 1 point is gained if you SNAP correctly **
+  ** 1 point is lost  if you SNAP when the cards dont match **
+  ** 1 point is lost if you don't SNAP and the cards match **
+
+
+
+
+
+LETS GO !
+
+
+`
+	fmt.Println(message)
 
 	// Creating a random variable to draw one card
 
@@ -117,6 +139,7 @@ func timedShuffle(cards []deck.Card) {
 			// taken the random card to be the most recent one
 			lastTwoCards[1] = card
 			checkLastTwoCards(false)
+
 			for index, j := range lastTwoCards {
 				if index == 0 { //If the value is first one
 					fmt.Printf("[ '%v', ", j)
