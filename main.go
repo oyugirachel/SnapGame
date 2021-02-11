@@ -111,7 +111,7 @@ BE ON THE LOOKOUT !
 
 			}
 		case <-done:
-			fmt.Println("Game over! your scored a total of ", score)
+			fmt.Println("Game over! you scored a total of ", score)
 			return
 		}
 	}
