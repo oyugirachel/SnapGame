@@ -15,7 +15,6 @@ import (
 var presentCards [2]deck.Card
 var lastCard = 1
 var score = 0
-var cardsDrawn = 0
 
 func checkLastTwoCards(snap bool) {
 	if snap {
@@ -27,7 +26,7 @@ func checkLastTwoCards(snap bool) {
 			score--
 		}
 	} else {
-		// Check if the last two cards are the same
+		// If the player does not say 'SNAP' when the last two cards drawn have the same value, they lose 1 point
 		if presentCards[0] == presentCards[1] {
 			// We are sure the user hasnt snapped so we deduct the score
 			score--
@@ -104,6 +103,8 @@ BE ON THE LOOKOUT !
 			}
 			presentCards[0] = presentCards[1]
 			presentCards[1] = cards[lastCard]
+			checkLastTwoCards(false)
+
 		case input := <-inputChannel:
 			if input != "" {
 				fmt.Println("SNAP")
