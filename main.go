@@ -105,7 +105,7 @@ BE ON THE LOOKOUT !
 			presentCards[0] = presentCards[1]
 			presentCards[1] = cards[lastCard]
 		case input := <-inputChannel:
-			if input == "" {
+			if input != "" {
 				fmt.Println("SNAP")
 				checkLastTwoCards(true)
 
