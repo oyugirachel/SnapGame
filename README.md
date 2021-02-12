@@ -1,7 +1,7 @@
 # **Welcome to the snap game!** 
 
 
-The game is created from the deck package >>> 
+The game is created from the  
 [deck package](https://github.com/oyugirachel/deck)
 
 
