@@ -32,7 +32,7 @@ func checkLastTwoCards(snap bool) {
 		// If the player does not say 'SNAP' when the last two cards drawn have the same value, they lose 1 point
 		if presentCards[0] == presentCards[1] {
 			// We are sure the user hasnt snapped so we deduct the score
-			score--
+			score++
 		 } //else {
 		// 	score = 0
 		// }
