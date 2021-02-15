@@ -52,6 +52,7 @@ BE ON THE LOOKOUT !
 	// Creating a random variable to draw one card
 
 	rand.Seed(time.Now().UTC().UnixNano())
+	
 	// calling in a goroutine to prevent blocking
 	go timedShuffle(cards)
 
@@ -132,6 +133,7 @@ func timedShuffle(cards []deck.Card) {
 	// timer := time.NewTimer(x * time.Second)
 
 	timer := time.NewTicker(time.Second * 2)
+	lastTwoCards := []deck.Card{cards[0], cards[1]}
 
 	for {
 		select {
@@ -146,6 +148,7 @@ func timedShuffle(cards []deck.Card) {
 			lastTwoCards[0] = lastTwoCards[1]
 			// taken the random card to be the most recent one
 			lastTwoCards[1] = card
+
 			checkLastTwoCards(false)
 
 			for index, j := range lastTwoCards {
