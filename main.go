@@ -1,6 +1,7 @@
 package main
 
 import (
+	
 	"fmt"
 
 	"github.com/common-nighthawk/go-figure"
@@ -18,6 +19,10 @@ var score = 0
 
 func checkLastTwoCards(snap bool) {
 	score = 0
+	if presentCards[0] != presentCards[1] {
+		// We are sure the user hasnt snapped and so the score remains constant
+		score = 0
+	 }
 	if snap {
 		if presentCards[0] == presentCards[1] {
 			// increment the score for the user has snapped
@@ -28,14 +33,14 @@ func checkLastTwoCards(snap bool) {
 			score--
 		}
 
-	} else {
-		// If the player does not say 'SNAP' when the last two cards drawn have the same value, they lose 1 point
-		if presentCards[0] == presentCards[1] {
-			// We are sure the user hasnt snapped so we deduct the score
-			score++
-		 } //else {
-		// 	score = 0
-		// }
+	// } else {
+	// 	// If the player does not say 'SNAP' when the last two cards drawn have the same value, they lose 1 point
+	// 	if presentCards[0] == presentCards[1] {
+	// 		// We are sure the user hasnt snapped so we deduct the score
+	// 		score--
+	// 	 } else {
+	// 	 	score = 0
+	// 	 }
 
 	}
 	fmt.Println("\nYour score is:", score)
@@ -90,6 +95,9 @@ BE ON THE LOOKOUT !
 		go func() {
 			var input string
 			fmt.Scanf("%s", &input)
+			
+			
+			
 			inputChannel <- input
 
 		}()
@@ -115,6 +123,7 @@ BE ON THE LOOKOUT !
 			if input != "" {
 				fmt.Println("SNAP")
 				checkLastTwoCards(true)
+				break
 
 			}
 		case <-done:
