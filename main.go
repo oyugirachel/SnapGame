@@ -3,24 +3,23 @@ package main
 import (
 	"fmt"
 
-	"github.com/oyugirachel/deck"
 	"github.com/common-nighthawk/go-figure"
+	"github.com/oyugirachel/deck"
 
 	"math/rand"
 	"time"
-
-	
 )
 
 // Holds the last two cards that will be displayed to the user
 var lastTwoCards [2]deck.Card
 var score = 0
 var cardsDrawn = 0
+var lastCard = 1
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
 	// Game instructions
-	art :=figure.NewColorFigure("SNAP GAME", "", "Red", true)
+	art := figure.NewColorFigure("SNAP GAME", "", "Red", true)
 	art.Blink(3000, 500, -1)
 
 	art.Print()
@@ -43,8 +42,8 @@ BE ON THE LOOKOUT !
 
 `
 	fmt.Println(message)
-	for k:=6; k>0; k--{
-		fmt.Printf("%d ..",k)
+	for k := 6; k > 0; k-- {
+		fmt.Printf("%d ..", k)
 		time.Sleep(time.Second)
 	}
 	fmt.Println("Gooooo!")
@@ -52,7 +51,7 @@ BE ON THE LOOKOUT !
 	// Creating a random variable to draw one card
 
 	rand.Seed(time.Now().UTC().UnixNano())
-	
+
 	// calling in a goroutine to prevent blocking
 	go timedShuffle(cards)
 
@@ -65,7 +64,7 @@ BE ON THE LOOKOUT !
 		if cardsDrawn == 52 {
 			break
 		}
-		
+
 		fmt.Scanf("%s\n", &input)
 		// fmt.Println(input)
 		if input != "" {
@@ -102,21 +101,6 @@ func checkLastTwoCards(snap bool) {
 
 }
 
-// DrawRandomCard function
-func drawRandomCard(cards []deck.Card) deck.Card {
-
-	// Generates a random card position between 0 and the length of the cards
-	var cardPosition = rand.Intn(len(cards))
-	// increment cards drawn
-	cardsDrawn++
-	
-	// fmt.Println(cardPosition)
-	// Returning the random chosen card
-
-	return cards[cardPosition]
-
-}
-
 // randInt function to randomize time between max and min
 func randInt(min int, max int) int {
 	return min + rand.Intn(max-min)
@@ -140,31 +124,26 @@ func timedShuffle(cards []deck.Card) {
 		// Waiting for the channel to emit a value
 		case <-timer.C:
 			// recursively call our shuffle
+			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard, len(cards))
+			fmt.Println(lastTwoCards[0])
+			fmt.Println(lastTwoCards[1])
+			fmt.Println("============================")
 
 			// go timedShuffle(cards)
+			lastCard++
+			if lastCard >= len(cards) {
 
-			card := drawRandomCard(cards)
+				return
+			}
+
 			// shift position to position one
 			lastTwoCards[0] = lastTwoCards[1]
+
+			lastTwoCards[1] = cards[lastCard]
+
 			// taken the random card to be the most recent one
-			lastTwoCards[1] = card
 
 			checkLastTwoCards(false)
-
-			for index, j := range lastTwoCards {
-				
-				if index == 0 { //If the value is first one
-					fmt.Println("=====================================")
-					fmt.Printf("[ '%v', ", j)
-					
-				} else if len(lastTwoCards) == index+1 { // If the value is the last one
-					fmt.Printf("'%v' ] \n", j)
-					fmt.Println("======================================")
-				} else {
-					fmt.Printf(" '%v', ", j) // for all ( middle ) values
-				}
-				
-			}
 
 		}
 	}
