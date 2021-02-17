@@ -55,15 +55,9 @@ BE ON THE LOOKOUT !
 	// calling in a goroutine to prevent blocking
 	go timedShuffle(cards)
 
-	// fmt.Println(cards)
-	// fmt.Println(len(cards))
-	// fmt.Println(drawRandomCard(cards))
 	var input string
 
 	for {
-		if cardsDrawn == 52 {
-			break
-		}
 
 		fmt.Scanf("%s\n", &input)
 		// fmt.Println(input)
@@ -74,9 +68,9 @@ BE ON THE LOOKOUT !
 		}
 
 		input = ""
+		fmt.Println("Players final score is :", score)
 
 	}
-	fmt.Println("Players final score is :", score)
 
 }
 
@@ -92,7 +86,7 @@ func checkLastTwoCards(snap bool) {
 	} else {
 		// Check if the last two cards are the same
 		if lastTwoCards[0] == lastTwoCards[1] {
-			// We are sure the user hasnt snapped so we deduct the score
+
 			score++
 		}
 
@@ -118,34 +112,32 @@ func timedShuffle(cards []deck.Card) {
 
 	timer := time.NewTicker(time.Second * 2)
 	lastTwoCards := []deck.Card{cards[0], cards[1]}
+	// done := make(chan bool)
 
 	for {
 		select {
 		// Waiting for the channel to emit a value
 		case <-timer.C:
-			// recursively call our shuffle
+
 			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard, len(cards))
 			fmt.Println(lastTwoCards[0])
 			fmt.Println(lastTwoCards[1])
 			fmt.Println("============================")
 
-			// go timedShuffle(cards)
 			lastCard++
-			if lastCard >= len(cards) {
 
+			if lastCard >= len(cards) {
 				return
 			}
 
-			// shift position to position one
 			lastTwoCards[0] = lastTwoCards[1]
 
 			lastTwoCards[1] = cards[lastCard]
 
-			// taken the random card to be the most recent one
-
 			checkLastTwoCards(false)
 
 		}
+
 	}
 }
 
