@@ -13,7 +13,6 @@ import (
 // Holds the last two cards that will be displayed to the user
 var lastTwoCards [2]deck.Card
 var score = 0
-var cardsDrawn = 0
 var lastCard = 1
 
 func main() {
@@ -52,12 +51,19 @@ BE ON THE LOOKOUT !
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
+	fmt.Printf("first Card %s \n", cards[0])
+	fmt.Printf("Second Card %s \n", cards[1])
+	fmt.Printf("Last Card %s \n", cards[51])
+
 	// calling in a goroutine to prevent blocking
 	go timedShuffle(cards)
 
 	var input string
 
 	for {
+		if lastCard >= 51 {
+			break
+		}
 
 		fmt.Scanf("%s\n", &input)
 		// fmt.Println(input)
@@ -119,7 +125,7 @@ func timedShuffle(cards []deck.Card) {
 		// Waiting for the channel to emit a value
 		case <-timer.C:
 
-			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard, len(cards))
+			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
 			fmt.Println(lastTwoCards[0])
 			fmt.Println(lastTwoCards[1])
 			fmt.Println("============================")
@@ -127,7 +133,10 @@ func timedShuffle(cards []deck.Card) {
 			lastCard++
 
 			if lastCard >= len(cards) {
+				// // fmt.Println("Game Over!")
+				// done <- true
 				return
+
 			}
 
 			lastTwoCards[0] = lastTwoCards[1]
@@ -135,6 +144,9 @@ func timedShuffle(cards []deck.Card) {
 			lastTwoCards[1] = cards[lastCard]
 
 			checkLastTwoCards(false)
+			// case <-done:
+			// 	fmt.Println("Game over! you scored a total of ", score)
+			// 	return
 
 		}
 
