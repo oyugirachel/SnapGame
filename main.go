@@ -2,175 +2,123 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/oyugirachel/deck"
-	"github.com/common-nighthawk/go-figure"
-
-	"math/rand"
+	"log"
 	"time"
 
-	
+	"github.com/oyugirachel/deck"
 )
 
-// Holds the last two cards that will be displayed to the user
-var lastTwoCards [2]deck.Card
-var score = 0
-var cardsDrawn = 0
+/**
+Snap Game Mechanics
+1. A deck of cards is shuffled
+2. Game draws a card
+3. Game displays last 2 drawn cards
+4. Game listens for user input used for scoring
+5. Game scores user based on input? and game output
+6. Game ticks for 2 seconds
+7. Loop until all 52 cards are displayed
+
+*/
+
+type SnapGame struct {
+	CardDeck      []deck.Card // an array of 52 cards make a deck
+	LastDrawnCard *deck.Card  // a holder for the last drawn card
+	Score         int         // a value with the total score of the player
+}
+
+// Tick/wait for 2 seconds
+func (snap *SnapGame) Tick() {
+	// tick for 2 seconds
+	timer := time.NewTicker(time.Second * 2)
+	<-timer.C // block until we get response from ticker
+}
+
+func (snap *SnapGame) CardDrawer() deck.Card {
+	// 	draw a card from the top of the stack,
+	drawnCard := snap.CardDeck[0]
+
+	// 	adjust/shift cards on deck accounting for 1 removed card
+	snap.CardDeck = snap.CardDeck[1:]
+
+	return drawnCard
+}
+
+// PrintCards is a function that formats the output of the displayed cards
+func (snap *SnapGame) PrintCards(previousCard, currentCard *deck.Card) {
+	fmt.Println("=====================================")
+	fmt.Printf("[ '%v', '%v' ]\n", previousCard, currentCard)
+	fmt.Println("=====================================")
+	fmt.Println()
+}
+
+func (snap *SnapGame) Scorer(drawnCard deck.Card) {
+	// run in a separate goroutine
+	go func() {
+		var input string
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+			log.Println(err)
+			return
+		}
+
+		if input == "" && &drawnCard == snap.LastDrawnCard {
+			// scoring rule if input is nil and last two cards match, deduct a point
+			snap.Score -= 1
+		} else if input != "" && &drawnCard == snap.LastDrawnCard {
+			// scoring rule if input is given and last two cards match, add a point
+			snap.Score += 1
+		} else if input != "" && &drawnCard != snap.LastDrawnCard {
+			// scoring rule if input is given and last two cards dont match, deduct a point
+			snap.Score -= 1
+		}
+	}()
+}
+
+func (snap *SnapGame) Run() {
+	for len(snap.CardDeck) > 0 {
+		// draw a card
+		drawnCard := snap.CardDrawer()
+
+		// display drawn card and the previously drawn card
+		snap.PrintCards(snap.LastDrawnCard, &drawnCard)
+
+		// score the player after drawing card
+		snap.Scorer(drawnCard)
+
+		// tick for 2 seconds
+		snap.Tick()
+
+		log.Printf("Deck cards: %v: Score: %v", len(snap.CardDeck), snap.Score)
+
+		// update last drawn card
+		snap.LastDrawnCard = &drawnCard
+	}
+}
 
 func main() {
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
+	snapGame := &SnapGame{CardDeck: cards[:52]}
+
 	// Game instructions
-	art :=figure.NewColorFigure("SNAP GAME", "", "Red", true)
-	art.Blink(3000, 500, -1)
+	// art := figure.NewColorFigure("SNAP GAME", "", "Red", true)
+	// art.Blink(3000, 500, -1)
+	//
+	// art.Print()
+	// 	message :=
+	// 		`
+	// Press any key and enter to say SNAP when the value of the last two cards displayed on the screen matches
+	//
+	//                =====BONUS=====
+	//   ** 1 point is gained if you SNAP correctly **
+	//   ** 1 point is lost  if you SNAP when the cards dont match **
+	//   ** 1 point is lost if you don't SNAP and the cards match **
+	//
+	// BE ON THE LOOKOUT !
+	//
+	// `
 
-	art.Print()
-
-	message :=
-		`
-Press any key and enter to say SNAP when the value of the last two cards displayed on the screen matches
-
-               =====BONUS=====
-  ** 1 point is gained if you SNAP correctly **
-  ** 1 point is lost  if you SNAP when the cards dont match **
-  ** 1 point is lost if you don't SNAP and the cards match **
-
-
-
-
-
-BE ON THE LOOKOUT !
-
-
-`
-	fmt.Println(message)
-	for k:=6; k>0; k--{
-		fmt.Printf("%d ..",k)
-		time.Sleep(time.Second)
-	}
-	fmt.Println("Gooooo!")
-
-	// Creating a random variable to draw one card
-
-	rand.Seed(time.Now().UTC().UnixNano())
-	
-	// calling in a goroutine to prevent blocking
-	go timedShuffle(cards)
-
-	// fmt.Println(cards)
-	// fmt.Println(len(cards))
-	// fmt.Println(drawRandomCard(cards))
-	var input string
-
-	for {
-		if cardsDrawn == 52 {
-			break
-		}
-		
-		fmt.Scanf("%s\n", &input)
-		// fmt.Println(input)
-		if input != "" {
-			fmt.Println("SNAP")
-			checkLastTwoCards(true)
-
-		}
-
-		input = ""
-
-	}
-	fmt.Println("Players final score is :", score)
+	snapGame.Run()
 
 }
 
-func checkLastTwoCards(snap bool) {
-	if snap {
-		if lastTwoCards[0] == lastTwoCards[1] {
-			// increment the score for the user has snapped
-			score++
-		} else {
-			// If the user snaps and the cards are not the same
-			score--
-		}
-	} else {
-		// Check if the last two cards are the same
-		if lastTwoCards[0] == lastTwoCards[1] {
-			// We are sure the user hasnt snapped so we deduct the score
-			score++
-		}
-
-	}
-	fmt.Println("\nYour score is:", score)
-
-}
-
-// DrawRandomCard function
-func drawRandomCard(cards []deck.Card) deck.Card {
-
-	// Generates a random card position between 0 and the length of the cards
-	var cardPosition = rand.Intn(len(cards))
-	// increment cards drawn
-	cardsDrawn++
-	
-	// fmt.Println(cardPosition)
-	// Returning the random chosen card
-
-	return cards[cardPosition]
-
-}
-
-// randInt function to randomize time between max and min
-func randInt(min int, max int) int {
-	return min + rand.Intn(max-min)
-}
-
-// timedShuffle function
-func timedShuffle(cards []deck.Card) {
-
-	// t := randInt(1, 5)
-	// x := time.Duration(t)
-
-	// // creating our timer and randomizing it
-
-	// timer := time.NewTimer(x * time.Second)
-
-	timer := time.NewTicker(time.Second * 2)
-	lastTwoCards := []deck.Card{cards[0], cards[1]}
-
-	for {
-		select {
-		// Waiting for the channel to emit a value
-		case <-timer.C:
-			// recursively call our shuffle
-
-			// go timedShuffle(cards)
-
-			card := drawRandomCard(cards)
-			// shift position to position one
-			lastTwoCards[0] = lastTwoCards[1]
-			// taken the random card to be the most recent one
-			lastTwoCards[1] = card
-
-			checkLastTwoCards(false)
-
-			for index, j := range lastTwoCards {
-				
-				if index == 0 { //If the value is first one
-					fmt.Println("=====================================")
-					fmt.Printf("[ '%v', ", j)
-					
-				} else if len(lastTwoCards) == index+1 { // If the value is the last one
-					fmt.Printf("'%v' ] \n", j)
-					fmt.Println("======================================")
-				} else {
-					fmt.Printf(" '%v', ", j) // for all ( middle ) values
-				}
-				
-			}
-
-		}
-	}
-}
-
-// scanInput function scans the input
-func scanInput() {
-
-}
