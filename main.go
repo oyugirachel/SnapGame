@@ -47,14 +47,6 @@ BE ON THE LOOKOUT !
 	}
 	fmt.Println("Gooooo!")
 
-	// Creating a random variable to draw one card
-
-	rand.Seed(time.Now().UTC().UnixNano())
-
-	fmt.Printf("first Card %s \n", cards[0])
-	fmt.Printf("Second Card %s \n", cards[1])
-	fmt.Printf("Last Card %s \n", cards[51])
-
 	// calling in a goroutine to prevent blocking
 	go timedShuffle(cards)
 
@@ -66,7 +58,7 @@ BE ON THE LOOKOUT !
 		}
 
 		fmt.Scanf("%s\n", &input)
-		// fmt.Println(input)
+
 		if input != "" {
 			fmt.Println("SNAP")
 			checkLastTwoCards(true)
@@ -74,9 +66,9 @@ BE ON THE LOOKOUT !
 		}
 
 		input = ""
-		fmt.Println("Players final score is :", score)
 
 	}
+	fmt.Println("Players final score is :", score)
 
 }
 
@@ -118,7 +110,6 @@ func timedShuffle(cards []deck.Card) {
 
 	timer := time.NewTicker(time.Second * 2)
 	lastTwoCards := []deck.Card{cards[0], cards[1]}
-	// done := make(chan bool)
 
 	for {
 		select {
@@ -144,9 +135,6 @@ func timedShuffle(cards []deck.Card) {
 			lastTwoCards[1] = cards[lastCard]
 
 			checkLastTwoCards(false)
-			// case <-done:
-			// 	fmt.Println("Game over! you scored a total of ", score)
-			// 	return
 
 		}
 
