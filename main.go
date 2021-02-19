@@ -5,8 +5,9 @@ import (
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/oyugirachel/deck"
+	"context"
+	"log"
 
-	"math/rand"
 	"time"
 )
 
@@ -14,6 +15,7 @@ import (
 var lastTwoCards [2]deck.Card
 var score = 0
 var lastCard = 1
+var input string
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
@@ -47,45 +49,74 @@ BE ON THE LOOKOUT !
 	}
 	fmt.Println("Gooooo!")
 
-	// calling in a goroutine to prevent blocking
-	go timedShuffle(cards)
+	presentCards := []deck.Card{cards[0], cards[1]}
+	lastCard := 1
 
-	var input string
+	ticker := time.NewTicker(2 * time.Second)
+	inputChannel := make(chan string)
+	ctx := context.Background()
+
+	go func() {
+		for ctx.Err() != nil {
+			var input string
+			if _, err := fmt.Scanf("%s\n", &input); err != nil {
+				log.Println(err)
+			}
+			inputChannel <- input
+			return
+		}
+	}()
 
 	for {
-		if lastCard >= 51 {
-			break
+		select {
+		case <-ticker.C:
+			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+			fmt.Println(presentCards[0])
+			fmt.Println(presentCards[1])
+			fmt.Println("============================")
+			lastCard++
+			if lastCard >= len(cards) {
+				ctx.Done()
+				return
+
+			}
+			presentCards[0] = presentCards[1]
+			presentCards[1] = cards[lastCard]
+			Scoring(false)
+
+		case input := <-inputChannel:
+
+			if input != "" {
+				fmt.Println("Snap")
+
+			}
+			Scoring(true)
+
+		case <-ctx.Done():
+			fmt.Println("Game over! you scored a total of ", score)
+			return
+
 		}
-
-		fmt.Scanf("%s\n", &input)
-
-		if input != "" {
-			fmt.Println("SNAP")
-			checkLastTwoCards(true)
-
-		}
-
-		input = ""
 
 	}
-	fmt.Println("Players final score is :", score)
 
+	
 }
-
-func checkLastTwoCards(snap bool) {
-	if snap {
-		if lastTwoCards[0] == lastTwoCards[1] {
-			// increment the score for the user has snapped
+// Scoring function
+func Scoring(Snap bool) {
+	score = 0
+	
+	if (input == "") && (lastTwoCards[0] != lastTwoCards[1]) {
+		score = 0
+	} else if (input == "") && (lastTwoCards[0] == lastTwoCards[1]) {
+		score--
+	}
+	if Snap {
+		if (input == "") && (lastTwoCards[0] == lastTwoCards[1]) {
 			score++
-		} else {
-			// If the user snaps and the cards are not the same
+		} else if (input != "") && (lastTwoCards[0] != lastTwoCards[1]) {
 			score--
-		}
-	} else {
-		// Check if the last two cards are the same
-		if lastTwoCards[0] == lastTwoCards[1] {
 
-			score++
 		}
 
 	}
@@ -93,55 +124,7 @@ func checkLastTwoCards(snap bool) {
 
 }
 
-// randInt function to randomize time between max and min
-func randInt(min int, max int) int {
-	return min + rand.Intn(max-min)
-}
 
-// timedShuffle function
-func timedShuffle(cards []deck.Card) {
 
-	// t := randInt(1, 5)
-	// x := time.Duration(t)
 
-	// // creating our timer and randomizing it
 
-	// timer := time.NewTimer(x * time.Second)
-
-	timer := time.NewTicker(time.Second * 2)
-	lastTwoCards := []deck.Card{cards[0], cards[1]}
-
-	for {
-		select {
-		// Waiting for the channel to emit a value
-		case <-timer.C:
-
-			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
-			fmt.Println(lastTwoCards[0])
-			fmt.Println(lastTwoCards[1])
-			fmt.Println("============================")
-
-			lastCard++
-
-			if lastCard >= len(cards) {
-				// // fmt.Println("Game Over!")
-				// done <- true
-				return
-
-			}
-
-			lastTwoCards[0] = lastTwoCards[1]
-
-			lastTwoCards[1] = cards[lastCard]
-
-			checkLastTwoCards(false)
-
-		}
-
-	}
-}
-
-// scanInput function scans the input
-func scanInput() {
-
-}
