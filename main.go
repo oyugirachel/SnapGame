@@ -62,19 +62,19 @@ BE ON THE LOOKOUT !
 	inputChannel := make(chan string)
 
 	done := make(chan bool)
+	go func() {
+
+		var input string
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+
+			log.Println(err)
+		}
+		inputChannel <- input
+		return
+
+	}()
 
 	for {
-		go func() {
-
-			var input string
-			if _, err := fmt.Scanf("%s\n", &input); err != nil {
-
-				log.Println(err)
-			}
-			inputChannel <- input
-			return
-
-		}()
 
 		select {
 		case input := <-inputChannel:
