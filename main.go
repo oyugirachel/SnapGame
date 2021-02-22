@@ -5,14 +5,13 @@ import (
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/oyugirachel/deck"
-	"context"
 	"log"
 
 	"time"
 )
 
 // Holds the last two cards that will be displayed to the user
-var lastTwoCards [2]deck.Card
+var presentCards [2]deck.Card
 var score = 0
 var lastCard = 1
 var input string
@@ -49,50 +48,53 @@ BE ON THE LOOKOUT !
 	}
 	fmt.Println("Gooooo!")
 
-	presentCards := []deck.Card{cards[0], cards[1]}
-	lastCard := 1
+	presentCards = [2]deck.Card{cards[0], cards[1]}
+	lastCard = 1
+    // Showing the two initial  cards
+	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+	fmt.Println(presentCards[0])
+	fmt.Println(presentCards[1])
+	fmt.Println("============================")
+	fmt.Println("Your score is :", score)
 
 	ticker := time.NewTicker(2 * time.Second)
-	inputChannel := make(chan string)
-	ctx := context.Background()
 
-	go func() {
-		for ctx.Err() != nil {
+	inputChannel := make(chan string)
+
+	done := make(chan bool)
+
+	for {
+		go func() {
+
 			var input string
 			if _, err := fmt.Scanf("%s\n", &input); err != nil {
+
 				log.Println(err)
 			}
 			inputChannel <- input
 			return
-		}
-	}()
 
-	for {
+		}()
+
 		select {
-		case <-ticker.C:
-			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
-			fmt.Println(presentCards[0])
-			fmt.Println(presentCards[1])
-			fmt.Println("============================")
-			lastCard++
-			if lastCard >= len(cards) {
-				ctx.Done()
-				return
-
-			}
-			presentCards[0] = presentCards[1]
-			presentCards[1] = cards[lastCard]
-			Scoring(false)
-
 		case input := <-inputChannel:
 
 			if input != "" {
 				fmt.Println("Snap")
 
 			}
-			Scoring(true)
+			scoring(true)
 
-		case <-ctx.Done():
+			drawCard(done, cards, ticker)
+
+			
+
+		case <-ticker.C:
+
+			drawCard(done, cards, ticker)
+			scoring(false)
+
+		case <-done:
 			fmt.Println("Game over! you scored a total of ", score)
 			return
 
@@ -100,31 +102,48 @@ BE ON THE LOOKOUT !
 
 	}
 
-	
 }
-// Scoring function
-func Scoring(Snap bool) {
-	score = 0
-	
-	if (input == "") && (lastTwoCards[0] != lastTwoCards[1]) {
-		score = 0
-	} else if (input == "") && (lastTwoCards[0] == lastTwoCards[1]) {
-		score--
+
+// drawCard function that gets the next card from the deck and adds it to the list of the present cards
+func drawCard(done chan bool, cards []deck.Card, ticker *time.Ticker) {
+	lastCard++
+
+	if lastCard >= len(cards) {
+		// incase a channel doesnot have a ready receiver, it doesnt block code execution
+		go func() {
+			done <- true
+		}()
+		return
 	}
-	if Snap {
-		if (input == "") && (lastTwoCards[0] == lastTwoCards[1]) {
+	presentCards[0] = presentCards[1]
+	presentCards[1] = cards[lastCard]
+	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+	fmt.Println(presentCards[0])
+	fmt.Println(presentCards[1])
+	fmt.Println("============================")
+	ticker = time.NewTicker(2 * time.Second)
+}
+
+// scoring function
+func scoring(snap bool) {
+
+	if snap {
+		if presentCards[0].Suit == presentCards[1].Suit {
 			score++
-		} else if (input != "") && (lastTwoCards[0] != lastTwoCards[1]) {
-			score--
-
+			fmt.Println("\nYour score is:", score)
+			return
 		}
+		score--
+		fmt.Println("\nYour score is:", score)
+		return
+	}
+	// this means they've not snapped
+	if presentCards[0].Suit == presentCards[1].Suit {
+		score--
+		fmt.Println("\nYour score is:", score)
 
+		return
 	}
 	fmt.Println("\nYour score is:", score)
-
+	return
 }
-
-
-
-
-
