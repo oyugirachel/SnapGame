@@ -50,7 +50,7 @@ BE ON THE LOOKOUT !
 
 	presentCards = [2]deck.Card{cards[0], cards[1]}
 	lastCard = 1
-    // Showing the two initial  cards
+	// Showing the two initial  cards
 	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
 	fmt.Println(presentCards[0])
 	fmt.Println(presentCards[1])
@@ -86,8 +86,6 @@ BE ON THE LOOKOUT !
 			scoring(true)
 
 			drawCard(done, cards, ticker)
-
-			
 
 		case <-ticker.C:
 
