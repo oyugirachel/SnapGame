@@ -128,7 +128,7 @@ func drawCard(done chan bool, cards []deck.Card, ticker *time.Ticker) {
 func scoring(snap bool) {
 
 	if snap {
-		if presentCards[0].Suit == presentCards[1].Suit {
+		if presentCards[0].Rank == presentCards[1].Rank {
 			score++
 			fmt.Println("\nYour score is:", score)
 			return
@@ -138,7 +138,7 @@ func scoring(snap bool) {
 		return
 	}
 	// this means they've not snapped
-	if presentCards[0].Suit == presentCards[1].Suit {
+	if presentCards[0].Rank == presentCards[1].Rank {
 		score--
 		fmt.Println("\nYour score is:", score)
 
