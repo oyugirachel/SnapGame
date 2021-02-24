@@ -63,14 +63,25 @@ BE ON THE LOOKOUT !
 
 	done := make(chan bool)
 	go func() {
+		for{
 
 		var input string
 		if _, err := fmt.Scanf("%s\n", &input); err != nil {
 
 			log.Println(err)
 		}
-		inputChannel <- input
-		return
+		select {
+		case <-done:
+			return
+		case inputChannel <- input:
+			scoring(true)
+			drawCard(done, cards, ticker)
+			
+
+		}
+	}
+		
+		
 
 	}()
 
