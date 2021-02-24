@@ -5,15 +5,16 @@ import (
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/oyugirachel/deck"
+	"log"
 
-	"math/rand"
 	"time"
 )
 
 // Holds the last two cards that will be displayed to the user
-var lastTwoCards [2]deck.Card
+var presentCards [2]deck.Card
 var score = 0
 var lastCard = 1
+var input string
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
@@ -47,101 +48,102 @@ BE ON THE LOOKOUT !
 	}
 	fmt.Println("Gooooo!")
 
-	// calling in a goroutine to prevent blocking
-	go timedShuffle(cards)
+	presentCards = [2]deck.Card{cards[0], cards[1]}
+	lastCard = 1
+	// Showing the two initial  cards
+	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+	fmt.Println(presentCards[0])
+	fmt.Println(presentCards[1])
+	fmt.Println("============================")
+	fmt.Println("Your score is :", score)
 
-	var input string
+	ticker := time.NewTicker(2 * time.Second)
+
+	inputChannel := make(chan string)
+
+	done := make(chan bool)
+	go func() {
+		for {
+
+			var input string
+			if _, err := fmt.Scanf("%s\n", &input); err != nil {
+
+				log.Println(err)
+			}
+			inputChannel <- input
+
+		}
+
+	}()
 
 	for {
-		if lastCard >= 51 {
-			break
-		}
 
-		fmt.Scanf("%s\n", &input)
-
-		if input != "" {
-			fmt.Println("SNAP")
-			checkLastTwoCards(true)
-
-		}
-
-		input = ""
-
-	}
-	fmt.Println("Players final score is :", score)
-
-}
-
-func checkLastTwoCards(snap bool) {
-	if snap {
-		if lastTwoCards[0] == lastTwoCards[1] {
-			// increment the score for the user has snapped
-			score++
-		} else {
-			// If the user snaps and the cards are not the same
-			score--
-		}
-	} else {
-		// Check if the last two cards are the same
-		if lastTwoCards[0] == lastTwoCards[1] {
-
-			score++
-		}
-
-	}
-	fmt.Println("\nYour score is:", score)
-
-}
-
-// randInt function to randomize time between max and min
-func randInt(min int, max int) int {
-	return min + rand.Intn(max-min)
-}
-
-// timedShuffle function
-func timedShuffle(cards []deck.Card) {
-
-	// t := randInt(1, 5)
-	// x := time.Duration(t)
-
-	// // creating our timer and randomizing it
-
-	// timer := time.NewTimer(x * time.Second)
-
-	timer := time.NewTicker(time.Second * 2)
-	lastTwoCards := []deck.Card{cards[0], cards[1]}
-
-	for {
 		select {
-		// Waiting for the channel to emit a value
-		case <-timer.C:
+		case input := <-inputChannel:
 
-			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
-			fmt.Println(lastTwoCards[0])
-			fmt.Println(lastTwoCards[1])
-			fmt.Println("============================")
-
-			lastCard++
-
-			if lastCard >= len(cards) {
-				// // fmt.Println("Game Over!")
-				// done <- true
-				return
+			if input != "" {
+				fmt.Println("Snap")
 
 			}
+			scoring(true)
 
-			lastTwoCards[0] = lastTwoCards[1]
+			drawCard(done, cards, ticker)
 
-			lastTwoCards[1] = cards[lastCard]
+		case <-ticker.C:
 
-			checkLastTwoCards(false)
+			drawCard(done, cards, ticker)
+			scoring(false)
+
+		case <-done:
+			fmt.Println("Game over! you scored a total of ", score)
+			return
 
 		}
 
 	}
+
 }
 
-// scanInput function scans the input
-func scanInput() {
+// drawCard function that gets the next card from the deck and adds it to the list of the present cards
+func drawCard(done chan bool, cards []deck.Card, ticker *time.Ticker) {
+	lastCard++
 
+	if lastCard >= len(cards) {
+		// incase a channel doesnot have a ready receiver, it doesnt block code execution
+		go func() {
+			done <- true
+		}()
+		return
+	}
+	presentCards[0] = presentCards[1]
+	presentCards[1] = cards[lastCard]
+	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+	fmt.Println(presentCards[0])
+	fmt.Println(presentCards[1])
+	fmt.Println("============================")
+	ticker = time.NewTicker(2 * time.Second)
+}
+
+// scoring function
+func scoring(snap bool) {
+
+	if snap {
+		if presentCards[0].Suit == presentCards[1].Suit {
+			score++
+			fmt.Println("\nYour score is:", score)
+			return
+		}
+		score--
+		fmt.Println("\nYour score is:", score)
+		return
+	}
+	// this means they've not snapped
+	if presentCards[0].Suit == presentCards[1].Suit {
+		score--
+		fmt.Println("\nYour score is:", score)
+
+		return
+	}
+	fmt.Println("\nYour score is:", score)
+	return
 }
