@@ -17,7 +17,6 @@ import (
 var presentCards [2]deck.Card
 var score = 0
 var lastCard = 1
-var input string
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
@@ -35,7 +34,7 @@ Press any key to say SNAP when the value of the last two cards displayed on the 
   ** 1 point is gained if you SNAP correctly **
   ** 1 point is lost  if you SNAP when the value of the cards dont match **
   ** 1 point is lost if you don't SNAP and the value of cards match **
-  ** Press esc key to exit snapping and ctrl^c to exit the game **
+  ** Press esc key to exit the game **
 
 
 
@@ -63,23 +62,21 @@ BE ON THE LOOKOUT !
 
 	ticker := time.NewTicker(2 * time.Second)
 
-	inputChannel := make(chan string)
+	inputChannel := make(chan rune)
 
 	done := make(chan bool)
 	go func() {
 		for {
 
-			var input string
-
 			char, key, err := keyboard.GetSingleKey()
 			if err != nil {
 				log.Println(err)
 			}
-			defer fmt.Printf("snap: %q\r\n", char)
+
 			if key == keyboard.KeyEsc {
-				break
+				done <- true
 			}
-			inputChannel <- input
+			inputChannel <- char
 
 		}
 
@@ -88,13 +85,10 @@ BE ON THE LOOKOUT !
 	for {
 
 		select {
-		case input := <-inputChannel:
+		case <-inputChannel:
 
-			if input == "" {
+			fmt.Println("snap")
 
-				fmt.Println("snap")
-
-			}
 			scoring(true)
 
 			drawCard(done, cards, ticker)
