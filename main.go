@@ -4,7 +4,10 @@ import (
 	"fmt"
 
 	"github.com/common-nighthawk/go-figure"
+
+	"github.com/eiannone/keyboard"
 	"github.com/oyugirachel/deck"
+
 	"log"
 
 	"time"
@@ -26,12 +29,13 @@ func main() {
 
 	message :=
 		`
-Press any key and enter to say SNAP when the value of the last two cards displayed on the screen matches
+Press any key to say SNAP when the value of the last two cards displayed on the screen matches
 
                =====BONUS=====
   ** 1 point is gained if you SNAP correctly **
-  ** 1 point is lost  if you SNAP when the cards dont match **
-  ** 1 point is lost if you don't SNAP and the cards match **
+  ** 1 point is lost  if you SNAP when the value of the cards dont match **
+  ** 1 point is lost if you don't SNAP and the value of cards match **
+  ** Press esc key to exit snapping and ctrl^c to exit the game **
 
 
 
@@ -66,9 +70,14 @@ BE ON THE LOOKOUT !
 		for {
 
 			var input string
-			if _, err := fmt.Scanf("%s\n", &input); err != nil {
 
+			char, key, err := keyboard.GetSingleKey()
+			if err != nil {
 				log.Println(err)
+			}
+			defer fmt.Printf("snap: %q\r\n", char)
+			if key == keyboard.KeyEsc {
+				break
 			}
 			inputChannel <- input
 
@@ -81,8 +90,9 @@ BE ON THE LOOKOUT !
 		select {
 		case input := <-inputChannel:
 
-			if input != "" {
-				fmt.Println("Snap")
+			if input == "" {
+
+				fmt.Println("snap")
 
 			}
 			scoring(true)
