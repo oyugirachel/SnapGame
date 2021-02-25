@@ -137,7 +137,7 @@ func scoring(snap bool) {
 		fmt.Println("\nYour score is:", score)
 		return
 	}
-	// this means they've not snapped
+	// This means they've not snapped
 	if presentCards[0].Rank == presentCards[1].Rank {
 		score--
 		fmt.Println("\nYour score is:", score)
