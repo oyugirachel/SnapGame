@@ -4,7 +4,10 @@ import (
 	"fmt"
 
 	"github.com/common-nighthawk/go-figure"
+
+	"github.com/eiannone/keyboard"
 	"github.com/oyugirachel/deck"
+
 	"log"
 
 	"time"
@@ -14,7 +17,6 @@ import (
 var presentCards [2]deck.Card
 var score = 0
 var lastCard = 1
-var input string
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
@@ -26,12 +28,13 @@ func main() {
 
 	message :=
 		`
-Press any key and enter to say SNAP when the value of the last two cards displayed on the screen matches
+Press any key to say SNAP when the value of the last two cards displayed on the screen matches
 
                =====BONUS=====
   ** 1 point is gained if you SNAP correctly **
-  ** 1 point is lost  if you SNAP when the cards dont match **
-  ** 1 point is lost if you don't SNAP and the cards match **
+  ** 1 point is lost  if you SNAP when the value of the cards dont match **
+  ** 1 point is lost if you don't SNAP and the value of cards match **
+  ** Press esc key to exit the game **
 
 
 
@@ -59,18 +62,21 @@ BE ON THE LOOKOUT !
 
 	ticker := time.NewTicker(2 * time.Second)
 
-	inputChannel := make(chan string)
+	inputChannel := make(chan rune)
 
 	done := make(chan bool)
 	go func() {
 		for {
 
-			var input string
-			if _, err := fmt.Scanf("%s\n", &input); err != nil {
-
+			char, key, err := keyboard.GetSingleKey()
+			if err != nil {
 				log.Println(err)
 			}
-			inputChannel <- input
+
+			if key == keyboard.KeyEsc {
+				done <- true
+			}
+			inputChannel <- char
 
 		}
 
@@ -79,12 +85,10 @@ BE ON THE LOOKOUT !
 	for {
 
 		select {
-		case input := <-inputChannel:
+		case <-inputChannel:
 
-			if input != "" {
-				fmt.Println("Snap")
+			fmt.Println("snap")
 
-			}
 			scoring(true)
 
 			drawCard(done, cards, ticker)
@@ -137,7 +141,7 @@ func scoring(snap bool) {
 		fmt.Println("\nYour score is:", score)
 		return
 	}
-	// this means they've not snapped
+	// This means they've not snapped
 	if presentCards[0].Rank == presentCards[1].Rank {
 		score--
 		fmt.Println("\nYour score is:", score)
