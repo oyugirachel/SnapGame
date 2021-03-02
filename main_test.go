@@ -65,8 +65,8 @@ func Test_scoring(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			
 			presentCards = tt.cards
-			// assertEquals(t, scoring(tt.args.snap), tt.score)
-			scoring(tt.args.snap)
+			assertEquals(t, scoring(tt.args.snap),tt.score)
+			// scoring(tt.args.snap)
 		})
 	}
 }
