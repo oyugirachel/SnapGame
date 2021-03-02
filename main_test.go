@@ -29,20 +29,20 @@ func Test_scoring(t *testing.T) {
 	}
 	tests := []struct {
 		name  string
-		cards []deck.Card
+		cards [2]deck.Card
 		args  args
 		score int
 	}{
 		{
 			name: "differentCards",
 
-			cards: []deck.Card{six, ten},
+			cards: [2]deck.Card{six, ten},
 			args:  args{snap: true},
 			score : -1,
 		},
 		{
 			name:  "differentCards",
-			cards: []deck.Card{six, ten},
+			cards: [2]deck.Card{six, ten},
 			args:  args{snap: false},
 			score: 0,
 			
@@ -50,22 +50,26 @@ func Test_scoring(t *testing.T) {
 
 		{
 			name:  "sameCards",
-			cards: []deck.Card{ace, ace},
+			cards: [2]deck.Card{ace, ace},
 			args:  args{snap: true},
 			score: 1,
 		},
 		{
 			name:  "sameCards",
-			cards: []deck.Card{ten, ten},
+			cards: [2]deck.Card{ten, ten},
 			args:  args{snap: false},
 			score: -1,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			
+			cards := deck.New(deck.Deck(1), deck.Shuffle)
+			lastCard = 1
+			presentCards[0] = presentCards[1]
+			presentCards[1] = cards[lastCard]
 			presentCards = tt.cards
-			assertEquals(t, scoring(tt.args.snap),tt.score)
+			
+			assertEquals(t,scoring(tt.args.snap),tt.score)
 			// scoring(tt.args.snap)
 		})
 	}
