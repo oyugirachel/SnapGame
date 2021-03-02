@@ -34,7 +34,7 @@ func Test_scoring(t *testing.T) {
 		score int
 	}{
 		{
-			name: "differentCards",
+			name: "differentCards-snap",
 
 			cards: [2]deck.Card{six, ten},
 			args:  args{snap: true},
@@ -49,7 +49,7 @@ func Test_scoring(t *testing.T) {
 		},
 
 		{
-			name:  "sameCards",
+			name:  "sameCards-snap",
 			cards: [2]deck.Card{ace, ace},
 			args:  args{snap: true},
 			score: 1,
