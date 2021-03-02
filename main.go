@@ -14,7 +14,7 @@ import (
 )
 
 // Holds the last two cards that will be displayed to the user
-var presentCards [2]deck.Card
+var presentCards []deck.Card
 var score = 0
 var lastCard = 1
 
@@ -51,7 +51,7 @@ BE ON THE LOOKOUT !
 	}
 	fmt.Println("Gooooo!")
 
-	presentCards = [2]deck.Card{cards[0], cards[1]}
+	presentCards = []deck.Card{cards[0], cards[1]}
 	lastCard = 1
 	// Showing the two initial  cards
 	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
