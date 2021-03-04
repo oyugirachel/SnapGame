@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/oyugirachel/deck"
 	"testing"
+
+	"github.com/oyugirachel/deck"
 )
 
 var (
@@ -39,20 +40,32 @@ func Test_scoring(t *testing.T) {
 		},
 		{
 			name:  "differentCards",
-			cards: [2]deck.Card{six, tenHearts},
+			cards: [2]deck.Card{six, tenSpades},
 			snap:  false,
 			score: 0,
 		},
 
 		{
-			name:  "sameCards-snap",
-			cards: [2]deck.Card{ace, ace},
+			name:  "sameRank-SameSuits-snap",
+			cards: [2]deck.Card{tenHearts, tenHearts},
 			snap:  true,
 			score: 1,
 		},
 		{
-			name:  "sameCards",
-			cards: [2]deck.Card{tenHearts, tenSpades},
+			name:  "sameRank-SameSuits",
+			cards: [2]deck.Card{tenHearts, tenHearts},
+			snap:  false,
+			score: -1,
+		},
+		{
+			name:  "sameRank-DiffSuits-snap",
+			cards: [2]deck.Card{tenSpades,tenHearts},
+			snap:  true,
+			score: 1,
+		},
+		{
+			name:  "sameRank-DiffSuits",
+			cards: [2]deck.Card{tenSpades,tenHearts},
 			snap:  false,
 			score: -1,
 		},
