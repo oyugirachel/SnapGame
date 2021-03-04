@@ -89,14 +89,18 @@ BE ON THE LOOKOUT !
 
 			fmt.Println("snap")
 
-			scoring(true)
+			points := scoring(true)
+			score += points
+			fmt.Println("Your score is ", score)
 
 			drawCard(done, cards, ticker)
 
 		case <-ticker.C:
 
 			drawCard(done, cards, ticker)
-			scoring(false)
+			points := scoring(false)
+			score += points
+			fmt.Println("Your score is ", score)
 
 		case <-done:
 			fmt.Println("Game over! you scored a total of ", score)
@@ -128,26 +132,26 @@ func drawCard(done chan bool, cards []deck.Card, ticker *time.Ticker) {
 	ticker = time.NewTicker(2 * time.Second)
 }
 
-// scoring function
-func scoring(snap bool) {
+// scoring function compares the drawn two cards and if snapped, returns the change in the score
+func scoring(snap bool) int {
 
 	if snap {
 		if presentCards[0].Rank == presentCards[1].Rank {
-			score++
-			fmt.Println("\nYour score is:", score)
-			return
+
+			return +1
+
 		}
-		score--
-		fmt.Println("\nYour score is:", score)
-		return
+
+		return -1
+
 	}
 	// This means they've not snapped
 	if presentCards[0].Rank == presentCards[1].Rank {
-		score--
-		fmt.Println("\nYour score is:", score)
 
-		return
+		return -1
+
 	}
-	fmt.Println("\nYour score is:", score)
-	return
+
+	return 0
+
 }
