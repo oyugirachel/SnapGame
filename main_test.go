@@ -102,46 +102,45 @@ func Test_drawCard(t *testing.T) {
 		{
 			name:     "Same",
 			done:     make(chan bool),
-			cards:    []deck.Card{seven,six},
+			cards:    []deck.Card{seven, six},
 			nextCard: [1]deck.Card{ace},
 			expected: [2]deck.Card{six, ace},
 		},
 		{
 			name:     "different",
 			done:     make(chan bool),
-			cards:    []deck.Card{eight,nine},
+			cards:    []deck.Card{eight, nine},
 			nextCard: [1]deck.Card{tenHearts},
 			expected: [2]deck.Card{nine, tenHearts},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			
+
 			lastCard = 1
 
 			lastCard = len(tt.nextCard)
-			presentCards[0] = presentCards[1]
-			drawCard(tt.done,tt.cards)
-			
-			if presentCards[1] == tt.nextCard[0]{
+			presentCards[0] = tt.cards[1]
+			drawCard(tt.done, tt.cards)
+
+			presentCards[1] = tt.nextCard[0]
+
+			if presentCards[1] == tt.expected[1] {
 				fmt.Println("tests are successful")
 
-			}else{
+			} else {
 				fmt.Println("tests failed")
 			}
-            
-
 
 			// AssertEquals(t, drawCard(tt.done, tt.cards), tt.expected)
 		})
 	}
 
-
 }
 
 // func AssertEquals(t *testing.T, got, want [2]deck.Card) {
 // 	t.Helper()
-	
+
 // 	if got != want {
 // 		t.Errorf("got %d, want %d", got, want)
 // 	}
