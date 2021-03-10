@@ -132,16 +132,7 @@ func Test_drawCard(t *testing.T) {
 				fmt.Println("tests failed")
 			}
 
-			// AssertEquals(t, drawCard(tt.done, tt.cards), tt.expected)
 		})
 	}
 
 }
-
-// func AssertEquals(t *testing.T, got, want [2]deck.Card) {
-// 	t.Helper()
-
-// 	if got != want {
-// 		t.Errorf("got %d, want %d", got, want)
-// 	}
-// }
