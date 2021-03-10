@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/oyugirachel/deck"
@@ -59,13 +60,13 @@ func Test_scoring(t *testing.T) {
 		},
 		{
 			name:  "sameRank-DiffSuits-snap",
-			cards: [2]deck.Card{tenSpades,tenHearts},
+			cards: [2]deck.Card{tenSpades, tenHearts},
 			snap:  true,
 			score: 1,
 		},
 		{
 			name:  "sameRank-DiffSuits",
-			cards: [2]deck.Card{tenSpades,tenHearts},
+			cards: [2]deck.Card{tenSpades, tenHearts},
 			snap:  false,
 			score: -1,
 		},
@@ -88,3 +89,60 @@ func assertEquals(t *testing.T, got, want int) {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
+
+func Test_drawCard(t *testing.T) {
+
+	tests := []struct {
+		name     string
+		done     chan bool
+		cards    []deck.Card
+		nextCard [1]deck.Card
+		expected [2]deck.Card
+	}{
+		{
+			name:     "Same",
+			done:     make(chan bool),
+			cards:    []deck.Card{seven,six},
+			nextCard: [1]deck.Card{ace},
+			expected: [2]deck.Card{six, ace},
+		},
+		{
+			name:     "different",
+			done:     make(chan bool),
+			cards:    []deck.Card{eight,nine},
+			nextCard: [1]deck.Card{tenHearts},
+			expected: [2]deck.Card{nine, tenHearts},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			
+			lastCard = 1
+
+			lastCard = len(tt.nextCard)
+			presentCards[0] = presentCards[1]
+			drawCard(tt.done,tt.cards)
+			
+			if presentCards[1] == tt.nextCard[0]{
+				fmt.Println("tests are successful")
+
+			}else{
+				fmt.Println("tests failed")
+			}
+            
+
+
+			// AssertEquals(t, drawCard(tt.done, tt.cards), tt.expected)
+		})
+	}
+
+
+}
+
+// func AssertEquals(t *testing.T, got, want [2]deck.Card) {
+// 	t.Helper()
+	
+// 	if got != want {
+// 		t.Errorf("got %d, want %d", got, want)
+// 	}
+// }

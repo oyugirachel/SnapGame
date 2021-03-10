@@ -93,14 +93,22 @@ BE ON THE LOOKOUT !
 			score += points
 			fmt.Println("Your score is ", score)
 
-			drawCard(done, cards, ticker)
+			drawCard(done, cards)
+			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+			fmt.Println(presentCards[0])
+			fmt.Println(presentCards[1])
+			fmt.Println("============================")
 
 		case <-ticker.C:
 
-			drawCard(done, cards, ticker)
 			points := scoring(false)
 			score += points
 			fmt.Println("Your score is ", score)
+			drawCard(done, cards)
+			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+			fmt.Println(presentCards[0])
+			fmt.Println(presentCards[1])
+			fmt.Println("============================")
 
 		case <-done:
 			fmt.Println("Game over! you scored a total of ", score)
@@ -113,7 +121,7 @@ BE ON THE LOOKOUT !
 }
 
 // drawCard function that gets the next card from the deck and adds it to the list of the present cards
-func drawCard(done chan bool, cards []deck.Card, ticker *time.Ticker) {
+func drawCard(done chan bool, cards []deck.Card){
 	lastCard++
 
 	if lastCard >= len(cards) {
@@ -121,15 +129,14 @@ func drawCard(done chan bool, cards []deck.Card, ticker *time.Ticker) {
 		go func() {
 			done <- true
 		}()
-		return
+		return 
+
 	}
 	presentCards[0] = presentCards[1]
 	presentCards[1] = cards[lastCard]
-	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
-	fmt.Println(presentCards[0])
-	fmt.Println(presentCards[1])
-	fmt.Println("============================")
-	ticker = time.NewTicker(2 * time.Second)
+	
+
+	
 }
 
 // scoring function compares the drawn two cards and if snapped, returns the change in the score
