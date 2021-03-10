@@ -120,7 +120,7 @@ func Test_drawCard(t *testing.T) {
 			lastCard = 1
 
 			lastCard = len(tt.nextCard)
-			presentCards[0] = tt.cards[1]
+			presentCards[0] = tt.cards[0]
 			drawCard(tt.done, tt.cards)
 
 			presentCards[1] = tt.nextCard[0]
