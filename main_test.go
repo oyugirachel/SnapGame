@@ -93,39 +93,35 @@ func assertEquals(t *testing.T, got, want int) {
 func Test_drawCard(t *testing.T) {
 
 	tests := []struct {
-		name     string
-		done     chan bool
-		cards    []deck.Card
-		nextCard [1]deck.Card
-		expected [2]deck.Card
+		name       string
+		done       chan bool
+		firstcards [2]deck.Card
+		drawCard   []deck.Card
+		expected   [2]deck.Card
 	}{
 		{
-			name:     "Same",
-			done:     make(chan bool),
-			cards:    []deck.Card{seven, six},
-			nextCard: [1]deck.Card{ace},
-			expected: [2]deck.Card{six, ace},
+			name:       "Same",
+			done:       make(chan bool),
+			firstcards: [2]deck.Card{seven, six},
+			drawCard:   []deck.Card{ace},
+			expected:   [2]deck.Card{six, ace},
 		},
 		{
-			name:     "different",
-			done:     make(chan bool),
-			cards:    []deck.Card{eight, nine},
-			nextCard: [1]deck.Card{tenHearts},
-			expected: [2]deck.Card{nine, tenHearts},
+			name:       "different-presentCards",
+			done:       make(chan bool),
+			firstcards: [2]deck.Card{eight, nine},
+			drawCard:   []deck.Card{tenHearts},
+			expected:   [2]deck.Card{nine, tenHearts},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			lastCard = 1
+			lastCard = len(tt.drawCard)
+			presentCards = tt.firstcards
+			drawCard(tt.done, tt.drawCard)
 
-			lastCard = len(tt.nextCard)
-			presentCards[0] = tt.cards[0]
-			drawCard(tt.done, tt.cards)
-
-			presentCards[1] = tt.nextCard[0]
-
-			if presentCards[1] == tt.expected[1] {
+			if presentCards == tt.expected {
 				fmt.Println("tests are successful")
 
 			} else {
