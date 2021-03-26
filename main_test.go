@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"testing"
+	"time"
 
 	"github.com/oyugirachel/deck"
 )
@@ -93,42 +93,90 @@ func assertEquals(t *testing.T, got, want int) {
 func Test_drawCard(t *testing.T) {
 
 	tests := []struct {
-		name       string
-		done       chan bool
-		firstcards [2]deck.Card
-		drawCard   []deck.Card
-		expected   [2]deck.Card
+		name              string
+		done              chan bool
+		drawnCardposition int
+
+		firstcards       [2]deck.Card
+		drawCard         []deck.Card
+		shouldSignalDone bool
+		expected         [2]deck.Card
 	}{
 		{
-			name:       "Same",
-			done:       make(chan bool),
-			firstcards: [2]deck.Card{seven, six},
-			drawCard:   []deck.Card{ace},
-			expected:   [2]deck.Card{six, ace},
+			name:              "1st Card",
+			done:              make(chan bool),
+			firstcards:        [2]deck.Card{seven, six},
+			drawnCardposition: 0,
+			drawCard:          []deck.Card{ace},
+
+			shouldSignalDone: false,
+			expected:         [2]deck.Card{six, ace},
 		},
 		{
-			name:       "different-presentCards",
-			done:       make(chan bool),
-			firstcards: [2]deck.Card{eight, nine},
-			drawCard:   []deck.Card{tenHearts},
-			expected:   [2]deck.Card{nine, tenHearts},
+			name:              "26th Card",
+			done:              make(chan bool),
+			firstcards:        [2]deck.Card{eight, ace},
+			drawCard:          []deck.Card{ace},
+			drawnCardposition: 25,
+			shouldSignalDone:  false,
+			expected:          [2]deck.Card{ace, ace},
+		},
+		{
+			name:              "52nd Card",
+			done:              make(chan bool),
+			firstcards:        [2]deck.Card{nine, queen},
+			drawCard:          []deck.Card{three},
+			drawnCardposition: 51,
+			shouldSignalDone:  true,
+			expected:          [2]deck.Card{queen, three},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			lastCard = len(tt.drawCard)
+			lastCard = tt.drawnCardposition
 			presentCards = tt.firstcards
-			drawCard(tt.done, tt.drawCard)
+			done := make(chan bool)
+			u := drawCard(done, tt.drawCard)
+			// done <- tt.shouldSignalDone
+			go func() {
 
-			if presentCards == tt.expected {
-				fmt.Println("tests are successful")
+				done <- tt.shouldSignalDone
+			}()
 
-			} else {
-				fmt.Println("tests failed")
-			}
+			<-done
+
+			AssertEquals(t, u, tt.expected)
 
 		})
 	}
 
+}
+
+func AssertEquals(t *testing.T, got, want [2]deck.Card) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("presentCards: %+v expected: %+v", got, want)
+
+	}
+}
+
+func TestGoroutine(t *testing.T) {
+
+	tests := []struct {
+		name string
+
+		done         chan bool
+		inputChannel chan rune
+		ticker       *time.Ticker
+		cards        []deck.Card
+	}{
+		
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Goroutine(tt.done, tt.inputChannel, tt.ticker, tt.cards)
+		})
+	}
 }

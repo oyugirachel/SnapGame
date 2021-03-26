@@ -81,49 +81,40 @@ BE ON THE LOOKOUT !
 		}
 
 	}()
+	Goroutine(done, inputChannel, ticker, cards)
+
+}
+
+// Goroutine channel
+func Goroutine(done chan bool, inputChannel chan rune, ticker *time.Ticker, cards []deck.Card) {
 
 	for {
-
+		snap := false
 		select {
-		case <-inputChannel:
-
-			fmt.Println("snap")
-
-			points := scoring(true)
-			score += points
-			fmt.Println("Your score is ", score)
-
-			drawCard(done, cards)
-			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
-			fmt.Println(presentCards[0])
-			fmt.Println(presentCards[1])
-			fmt.Println("============================")
-
-		case <-ticker.C:
-			points := scoring(false)
-			score += points
-			fmt.Println("Your score is ", score)
-			drawCard(done, cards)
-
-			fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
-			fmt.Println(presentCards[0])
-			fmt.Println(presentCards[1])
-			fmt.Println("============================")
-			
-			
-
 		case <-done:
 			fmt.Println("Game over! you scored a total of ", score)
 			return
-
+		case <-inputChannel:
+			fmt.Println("snap")
+			snap = true
+		case <-ticker.C:
 		}
+		points := scoring(snap)
+		score += points
+		fmt.Println("Your score is ", score)
+		drawCard(done, cards)
 
+		fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
+		fmt.Println(presentCards[0])
+		fmt.Println(presentCards[1])
+		fmt.Println("============================")
 	}
 
 }
 
 // drawCard function that gets the next card from the deck and adds it to the list of the present cards
-func drawCard(done chan bool, cards []deck.Card) {
+func drawCard(done chan bool, cards []deck.Card) [2]deck.Card {
+
 	lastCard++
 
 	if lastCard >= len(cards) {
@@ -131,11 +122,13 @@ func drawCard(done chan bool, cards []deck.Card) {
 		go func() {
 			done <- true
 		}()
-		return
+		return presentCards
 
 	}
 	presentCards[0] = presentCards[1]
 	presentCards[1] = cards[lastCard]
+	
+	return presentCards
 
 }
 
