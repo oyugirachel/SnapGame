@@ -103,10 +103,8 @@ func Goroutine(done chan bool, inputChannel chan rune, ticker *time.Ticker, card
 		points := scoring(snap)
 		score += points
 		fmt.Println("Your score is ", score)
-		finalCard :=drawCard(done, cards)
+		finalCard := drawCard(done, cards)
 		presentCards = append(presentCards, finalCard)
-		
-
 
 		fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
 		fmt.Println(presentCards[0])
