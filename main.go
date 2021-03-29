@@ -14,9 +14,10 @@ import (
 )
 
 // Holds the last two cards that will be displayed to the user
-var presentCards [2]deck.Card
+var presentCards []deck.Card
 var score = 0
 var lastCard = 1
+var finalCard deck.Card
 
 func main() {
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
@@ -51,7 +52,7 @@ BE ON THE LOOKOUT !
 	}
 	fmt.Println("Gooooo!")
 
-	presentCards = [2]deck.Card{cards[0], cards[1]}
+	presentCards = []deck.Card{cards[0], cards[1]}
 	lastCard = 1
 	// Showing the two initial  cards
 	fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
@@ -102,7 +103,10 @@ func Goroutine(done chan bool, inputChannel chan rune, ticker *time.Ticker, card
 		points := scoring(snap)
 		score += points
 		fmt.Println("Your score is ", score)
-		drawCard(done, cards)
+		finalCard :=drawCard(done, cards)
+		presentCards = append(presentCards, finalCard)
+		
+
 
 		fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
 		fmt.Println(presentCards[0])
@@ -113,7 +117,7 @@ func Goroutine(done chan bool, inputChannel chan rune, ticker *time.Ticker, card
 }
 
 // drawCard function that gets the next card from the deck and adds it to the list of the present cards
-func drawCard(done chan bool, cards []deck.Card) [2]deck.Card {
+func drawCard(done chan bool, cards []deck.Card) deck.Card {
 
 	lastCard++
 
@@ -122,13 +126,13 @@ func drawCard(done chan bool, cards []deck.Card) [2]deck.Card {
 		go func() {
 			done <- true
 		}()
-		return presentCards
+		return finalCard
 
 	}
 	presentCards[0] = presentCards[1]
 	presentCards[1] = cards[lastCard]
-	
-	return presentCards
+
+	return finalCard
 
 }
 

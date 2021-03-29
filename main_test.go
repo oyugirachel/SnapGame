@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
@@ -28,45 +30,45 @@ func Test_scoring(t *testing.T) {
 
 	tests := []struct {
 		name  string
-		cards [2]deck.Card
+		cards []deck.Card
 		snap  bool
 		score int
 	}{
 		{
 			name: "differentCards-snap",
 
-			cards: [2]deck.Card{six, tenSpades},
+			cards: []deck.Card{six, tenSpades},
 			snap:  true,
 			score: -1,
 		},
 		{
 			name:  "differentCards",
-			cards: [2]deck.Card{six, tenSpades},
+			cards: []deck.Card{six, tenSpades},
 			snap:  false,
 			score: 0,
 		},
 
 		{
 			name:  "sameRank-SameSuits-snap",
-			cards: [2]deck.Card{tenHearts, tenHearts},
+			cards: []deck.Card{tenHearts, tenHearts},
 			snap:  true,
 			score: 1,
 		},
 		{
 			name:  "sameRank-SameSuits",
-			cards: [2]deck.Card{tenHearts, tenHearts},
+			cards: []deck.Card{tenHearts, tenHearts},
 			snap:  false,
 			score: -1,
 		},
 		{
 			name:  "sameRank-DiffSuits-snap",
-			cards: [2]deck.Card{tenSpades, tenHearts},
+			cards: []deck.Card{tenSpades, tenHearts},
 			snap:  true,
 			score: 1,
 		},
 		{
 			name:  "sameRank-DiffSuits",
-			cards: [2]deck.Card{tenSpades, tenHearts},
+			cards: []deck.Card{tenSpades, tenHearts},
 			snap:  false,
 			score: -1,
 		},
@@ -97,38 +99,38 @@ func Test_drawCard(t *testing.T) {
 		done              chan bool
 		drawnCardposition int
 
-		firstcards       [2]deck.Card
+		firstcards       []deck.Card
 		drawCard         []deck.Card
 		shouldSignalDone bool
-		expected         [2]deck.Card
+		expected         []deck.Card
 	}{
 		{
 			name:              "1st Card",
 			done:              make(chan bool),
-			firstcards:        [2]deck.Card{seven, six},
+			firstcards:        []deck.Card{seven, six},
 			drawnCardposition: 0,
 			drawCard:          []deck.Card{ace},
 
 			shouldSignalDone: false,
-			expected:         [2]deck.Card{six, ace},
+			expected:         []deck.Card{six, ace},
 		},
 		{
 			name:              "26th Card",
 			done:              make(chan bool),
-			firstcards:        [2]deck.Card{eight, ace},
+			firstcards:        []deck.Card{eight, ace},
 			drawCard:          []deck.Card{ace},
 			drawnCardposition: 25,
 			shouldSignalDone:  false,
-			expected:          [2]deck.Card{ace, ace},
+			expected:          []deck.Card{ace, ace},
 		},
 		{
 			name:              "52nd Card",
 			done:              make(chan bool),
-			firstcards:        [2]deck.Card{nine, queen},
+			firstcards:        []deck.Card{nine, queen},
 			drawCard:          []deck.Card{three},
-			drawnCardposition: 51,
+			drawnCardposition: 52,
 			shouldSignalDone:  true,
-			expected:          [2]deck.Card{queen, three},
+			expected:          []deck.Card{queen, three},
 		},
 	}
 	for _, tt := range tests {
@@ -138,7 +140,7 @@ func Test_drawCard(t *testing.T) {
 			presentCards = tt.firstcards
 			done := make(chan bool)
 			u := drawCard(done, tt.drawCard)
-			// done <- tt.shouldSignalDone
+
 			go func() {
 
 				done <- tt.shouldSignalDone
@@ -146,20 +148,11 @@ func Test_drawCard(t *testing.T) {
 
 			<-done
 
-			AssertEquals(t, u, tt.expected)
+			fmt.Println(reflect.DeepEqual(u, tt.expected))
 
 		})
 	}
 
-}
-
-func AssertEquals(t *testing.T, got, want [2]deck.Card) {
-	t.Helper()
-
-	if got != want {
-		t.Errorf("presentCards: %+v expected: %+v", got, want)
-
-	}
 }
 
 func TestGoroutine(t *testing.T) {
@@ -171,9 +164,7 @@ func TestGoroutine(t *testing.T) {
 		inputChannel chan rune
 		ticker       *time.Ticker
 		cards        []deck.Card
-	}{
-		
-	}
+	}{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Goroutine(tt.done, tt.inputChannel, tt.ticker, tt.cards)
