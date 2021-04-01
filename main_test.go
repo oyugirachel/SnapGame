@@ -141,13 +141,6 @@ func Test_drawCard(t *testing.T) {
 			done := make(chan bool)
 			u := drawCard(done, tt.drawCard)
 
-			go func() {
-
-				done <- tt.shouldSignalDone
-			}()
-
-			<-done
-
 			if reflect.DeepEqual(u, tt.expected) {
 				fmt.Printf("Tests passed")
 
