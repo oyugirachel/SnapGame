@@ -148,7 +148,12 @@ func Test_drawCard(t *testing.T) {
 
 			<-done
 
-			fmt.Println(reflect.DeepEqual(u, tt.expected))
+			if reflect.DeepEqual(u, tt.expected) {
+				fmt.Printf("Tests passed")
+
+			} else {
+				fmt.Printf("Tests failed")
+			}
 
 		})
 	}
@@ -157,47 +162,45 @@ func Test_drawCard(t *testing.T) {
 
 func TestGoroutine(t *testing.T) {
 	ticker := time.NewTicker(2 * time.Second)
-    inputChannel := make(chan rune)
+	inputChannel := make(chan rune)
 	done := make(chan bool)
 	cards := deck.New(deck.Deck(1), deck.Shuffle)
 
-    go func() {
-        defer close(done)
-        Goroutine(done,inputChannel,ticker,cards)
-    }()
+	go func() {
+		defer close(done)
+		Goroutine(done, inputChannel, ticker, cards)
+	}()
 
-    select {
-    case <-done:
-    case <-time.After(2 * time.Second):
-        t.Error("quitting pre-send failed")
-    }
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Error("quitting pre-send failed")
+	}
 
-    ticker = time.NewTicker(2 * time.Second)
-    inputChannel = make(chan rune)
+	ticker = time.NewTicker(2 * time.Second)
+	inputChannel = make(chan rune)
 	done = make(chan bool)
 	cards = deck.New(deck.Deck(1), deck.Shuffle)
 	snap := false
 
-    go func() {
+	go func() {
 		defer close(done)
-	
-        Goroutine(done,inputChannel,ticker,cards)
-    }()
 
-    inputChannel <- 2
+		Goroutine(done, inputChannel, ticker, cards)
+	}()
+
+	inputChannel <- 2
 	select {
 	case <-inputChannel:
 		snap = true
-    case <-time.After(2 * time.Second):
-        t.Error("Sending failed")
-    }
+	case <-time.After(2 * time.Second):
+		t.Error("Sending failed")
+	}
 
-    
 	select {
-   
-    case <-time.After(2 * time.Second):
-        scoring(snap)
-    }
 
-	
+	case <-time.After(2 * time.Second):
+		scoring(snap)
+	}
+
 }
