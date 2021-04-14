@@ -102,24 +102,31 @@ BE ON THE LOOKOUT !
 
 // Goroutine channels which instatiates the done channel, input channel and the ticker channel
 func Goroutine(done chan bool, inputChannel chan rune, ticker *time.Ticker, cards []deck.Card) {
-
+    // starting an endless loop of executing the goroutine when snap is false
 	for {
+		// Anotating snap to false
 		snap := false
-		// a select case which blocks an unblocks a channel depending on the one which is free
+		// a select case which blocks an unblocks a channel depending on the one which case is free
 		select {
+			// When the goroutine runs and the card is the last one at the deck, a done message will be printed to the screen
 		case <-done:
 			fmt.Println("Game over! you scored a total of ", score)
 			return
+		// When the goroutine runs and there is a keypress, it will print "snap "
+		// To the screen and annotate snap to true	
 		case <-inputChannel:
 			fmt.Println("snap")
 			snap = true
+		// Each time the goroutine runs the ticker goes off and the case ticker is run
 		case <-ticker.C:
 		}
 		// updating the score and returning the change in the score
 		points := scoring(snap)
 		score += points
+		// Printing the score to the screen
 		fmt.Println("Your score is ", score)
 
+        // Calling the draw function
 		drawCard(done, cards)
 
 		fmt.Printf("=============================[%2d/%2d]~ \n", lastCard+1, len(cards))
