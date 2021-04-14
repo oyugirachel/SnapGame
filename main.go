@@ -88,10 +88,11 @@ BE ON THE LOOKOUT !
 			if err != nil {
 				log.Println(err)
 			}
-
+            // A condition that calls the done channel when the escape key is called
 			if key == keyboard.KeyEsc {
 				done <- true
 			}
+			// Sending info to the input channel
 			inputChannel <- char
 
 		}
