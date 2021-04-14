@@ -7,7 +7,7 @@ import (
 
 	"github.com/oyugirachel/deck"
 )
-
+// Declaring a variables of customized values t be used during testing
 var (
 	ace       = deck.Card{Suit: deck.Spade, Rank: deck.Ace}
 	two       = deck.Card{Suit: deck.Spade, Rank: deck.Two}

@@ -78,11 +78,13 @@ BE ON THE LOOKOUT !
 	inputChannel := make(chan rune)
 	// Creating a done channel
 	done := make(chan bool)
-	// a goroutine implementing the key press
+	// a goroutine implementing(listening) the key press
 	go func() {
 		for {
 
+            // getting a single keystroke
 			char, key, err := keyboard.GetSingleKey()
+			// Checking for any error
 			if err != nil {
 				log.Println(err)
 			}
