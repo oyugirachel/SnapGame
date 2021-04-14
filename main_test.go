@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/oyugirachel/deck"
 )
@@ -149,51 +148,6 @@ func Test_drawCard(t *testing.T) {
 			}
 
 		})
-	}
-
-}
-
-func TestGoroutine(t *testing.T) {
-	ticker := time.NewTicker(2 * time.Second)
-	inputChannel := make(chan rune)
-	done := make(chan bool)
-	cards := deck.New(deck.Deck(1), deck.Shuffle)
-
-	go func() {
-		defer close(done)
-		Goroutine(done, inputChannel, ticker, cards)
-	}()
-
-	select {
-	case <-done:
-	case <-time.After(2 * time.Second):
-		t.Error("quitting pre-send failed")
-	}
-
-	ticker = time.NewTicker(2 * time.Second)
-	inputChannel = make(chan rune)
-	done = make(chan bool)
-	cards = deck.New(deck.Deck(1), deck.Shuffle)
-	snap := false
-
-	go func() {
-		defer close(done)
-
-		Goroutine(done, inputChannel, ticker, cards)
-	}()
-
-	inputChannel <- 2
-	select {
-	case <-inputChannel:
-		snap = true
-	case <-time.After(2 * time.Second):
-		t.Error("Sending failed")
-	}
-
-	select {
-
-	case <-time.After(2 * time.Second):
-		scoring(snap)
 	}
 
 }
