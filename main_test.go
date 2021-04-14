@@ -7,7 +7,7 @@ import (
 
 	"github.com/oyugirachel/deck"
 )
-// Declaring a variables of customized values t be used during testing
+// Declaring a variables of customized values to be used during testing
 var (
 	ace       = deck.Card{Suit: deck.Spade, Rank: deck.Ace}
 	two       = deck.Card{Suit: deck.Spade, Rank: deck.Two}
@@ -24,7 +24,7 @@ var (
 	queen     = deck.Card{Suit: deck.Spade, Rank: deck.Queen}
 	king      = deck.Card{Suit: deck.Spade, Rank: deck.King}
 )
-
+// Scoring test function
 func Test_scoring(t *testing.T) {
 
 	tests := []struct {
@@ -74,10 +74,10 @@ func Test_scoring(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
+            // Reassigning presentCards to the current tt.cards used
 			presentCards = tt.cards
 			score = 0
-
+            // Using assertEquals for comparison
 			assertEquals(t, scoring(tt.snap), tt.score)
 
 		})

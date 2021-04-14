@@ -15,7 +15,7 @@ import (
 
 // Holds the last two cards that will be displayed to the user
 var presentCards []deck.Card
-//Score holds the current score for the curre
+//Score holds the current score
 var score = 0
 // lastCard variable which simply is an integer which counts each time a card is removed from the deck inclusive of the position
 var lastCard = 1
